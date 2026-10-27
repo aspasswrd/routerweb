@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Мой интернет — Routerweb</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23b3702f'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <main class="page-shell">
+    <header class="brand">
+      <div class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v4M8 9a4 4 0 0 1 8 0v2H8V9Z"/><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 15h2m3 0h2"/></svg></div>
+      <div class="lockup"><b>Мой интернет</b><span>routerweb · демо</span></div>
+    </header>
+    <section class="panel">
+      <div class="panel-head"><h2>Панель устройств</h2><p>Режимы сохраняются в панели. Маршрутизация и VPN не изменяются.</p></div>
+      <div class="panel-body">
+        <div class="status-hero"><span class="led-big good"></span><div><b>Панель работает</b><span>Устройств сохранено: {{len .Devices}}</span></div></div>
+        <a href="/health">Проверить состояние приложения</a>
+      </div>
+    </section>
+    {{range .Devices}}
+    <section class="panel">
+      <div class="panel-head"><h2>{{.Name}}</h2><p class="device-meta">{{.MAC}}</p></div>
+      <form class="panel-body" action="/devices" method="post">
+        <input type="hidden" name="name" value="{{.Name}}">
+        <input type="hidden" name="mac" value="{{.MAC}}">
+        <div class="field"><label for="mode-{{.MAC}}">Режим</label><select id="mode-{{.MAC}}" name="mode">{{$mode := .Mode}}{{range $key, $label := $.Modes}}<option value="{{$key}}" {{if eq $key $mode}}selected{{end}}>{{$label}}</option>{{end}}</select></div>
+        <button class="btn btn-primary">Сохранить режим</button>
+      </form>
+    </section>
+    {{else}}
+    <section class="panel"><div class="panel-body"><h2>Устройств пока нет</h2><p>Добавьте первое устройство ниже.</p></div></section>
+    {{end}}
+    <section class="panel">
+      <div class="panel-head"><h2>Добавить устройство</h2><p>Повторный MAC-адрес обновит существующее устройство.</p></div>
+      <form class="panel-body" action="/devices" method="post">
+        <div class="field"><label for="name">Название</label><input id="name" name="name" placeholder="Ноутбук" maxlength="40" required></div>
+        <div class="field"><label for="mac">MAC-адрес</label><input id="mac" name="mac" placeholder="AA:BB:CC:DD:EE:FF" required></div>
+        <div class="field"><label for="mode">Режим</label><select id="mode" name="mode">{{range $key, $label := .Modes}}<option value="{{$key}}" {{if eq $key "selective"}}selected{{end}}>{{$label}}</option>{{end}}</select></div>
+        <button class="btn btn-primary">Сохранить устройство</button>
+      </form>
+    </section>
+  </main>
+</body>
+</html>
